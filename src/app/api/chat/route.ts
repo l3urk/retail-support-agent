@@ -48,6 +48,7 @@ The server independently enforces these rules even if you request a tool call. V
       const results: any[] = [];
       for (const part of calls) {
         const call = part.functionCall;
+        if (!call?.name) continue;
         const args = call.args || {};
         let result: any;
         const add = (title: string, detail: string, status: TraceItem["status"] = "success") => trace.push({ id: crypto.randomUUID(), at: new Date().toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit", second: "2-digit" }), kind: status === "blocked" ? "policy" : "tool", title, detail, status });
