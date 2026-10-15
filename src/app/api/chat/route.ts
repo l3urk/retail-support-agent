@@ -40,7 +40,7 @@ The server independently enforces these rules even if you request a tool call. V
     const contents: any[] = [...history.filter((m: any) => ["user", "model"].includes(m.role) && typeof m.text === "string").map((m: any) => ({ role: m.role, parts: [{ text: m.text.slice(0, 2000) }] })), { role: "user", parts: [{ text: message }] }];
     let finalText = "";
     for (let step = 0; step < 6; step++) {
-      const response = await ai().models.generateContent({ model: process.env.GEMINI_MODEL || "gemini-2.5-flash", contents, config: { systemInstruction: system, tools: [{ functionDeclarations: toolDeclarations }], temperature: 0.2 } });
+      const response = await ai().models.generateContent({ model: process.env.GEMINI_MODEL || "gemini-2.5-flash-lite", contents, config: { systemInstruction: system, tools: [{ functionDeclarations: toolDeclarations }], temperature: 0.2 } });
       const candidate = response.candidates?.[0];
       const parts = candidate?.content?.parts || [];
       const calls = parts.filter((p: any) => p.functionCall?.name);
