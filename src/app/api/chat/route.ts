@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createHmac, timingSafeEqual } from "node:crypto";
-import { GoogleGenAI, Type } from "@google/genai";
+import { GoogleGenAI, Type, type FunctionDeclaration } from "@google/genai";
 import { POLICY, verifyCustomer, lookupOrders, lookupOrder, processRefund, updateTicket, type TraceItem } from "@/lib/support";
 
 export const runtime = "nodejs";
@@ -14,7 +14,7 @@ function readCustomerCookie(req: NextRequest): string | undefined {
   const expected = signCustomer(id);
   try { return timingSafeEqual(Buffer.from(signature, "hex"), Buffer.from(expected, "hex")) ? id : undefined; } catch { return undefined; }
 }
-const toolDeclarations = [
+const toolDeclarations: FunctionDeclaration[] = [
   { name: "verify_customer", description: "Verify a customer using their registered email and last four phone digits.", parameters: { type: Type.OBJECT, properties: { email: { type: Type.STRING }, phone_last4: { type: Type.STRING } }, required: ["email", "phone_last4"] } },
   { name: "list_orders", description: "List orders for the already verified customer only.", parameters: { type: Type.OBJECT, properties: {}, required: [] } },
   { name: "lookup_order", description: "Look up one order belonging to the verified customer.", parameters: { type: Type.OBJECT, properties: { order_id: { type: Type.STRING } }, required: ["order_id"] } },
