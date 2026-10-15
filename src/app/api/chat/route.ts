@@ -4,6 +4,8 @@ import { GoogleGenAI, Type, type FunctionDeclaration } from "@google/genai";
 import { POLICY, verifyCustomer, lookupOrders, lookupOrder, processRefund, updateTicket, type TraceItem } from "@/lib/support";
 
 export const runtime = "nodejs";
+// The agent loop can make several sequential Gemini calls; give the function room on Vercel.
+export const maxDuration = 60;
 const ai = () => new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY! });
 function signCustomer(id: string) { return createHmac("sha256", process.env.GEMINI_API_KEY!).update(id).digest("hex"); }
 function readCustomerCookie(req: NextRequest): string | undefined {

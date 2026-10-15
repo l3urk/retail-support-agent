@@ -51,7 +51,12 @@ export function lookupOrders(customerId: string) {
   return orders.filter(o => o.customerId === customerId);
 }
 
-export function lookupOrder(orderId: string, customerId: string) {
+export type Order = (typeof orders)[number];
+export type LookupOrderResult =
+  | { found: false; message: string }
+  | { found: true; order: Order };
+
+export function lookupOrder(orderId: string, customerId: string): LookupOrderResult {
   const order = orders.find(o => o.id.toLowerCase() === orderId.toLowerCase());
   if (!order) return { found: false, message: "Order not found." };
   if (order.customerId !== customerId) return { found: false, message: "That order is not associated with the verified customer." };
@@ -60,7 +65,7 @@ export function lookupOrder(orderId: string, customerId: string) {
 
 export function processRefund(orderId: string, customerId: string, amount: number) {
   const found = lookupOrder(orderId, customerId);
-  if (!found.found || !("order" in found)) return { status: "failed", message: found.message };
+  if (!found.found) return { status: "failed", message: found.message };
   const order = found.order;
   if (!order.refundEligible) return { status: "failed", message: "This order is not eligible for a refund in the demo." };
   if (!Number.isFinite(amount) || amount <= 0 || amount > order.amount) return { status: "failed", message: "Refund amount is invalid for this order." };
